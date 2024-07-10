@@ -1,6 +1,6 @@
 import os
 import openpyxl
-import pyperclip
+import pandas as pd 
 
 # Function to remove write protection from an Excel file
 def remove_write_protection(excel_file):
@@ -36,14 +36,8 @@ def append_rows(source_file, target_file):
 # Function to copy the content of an Excel file to the clipboard
 def copy_to_clipboard(excel_file):
     try:
-        wb = openpyxl.load_workbook(excel_file, read_only=True)
-        ws = wb.active
-
-        # Construct a tab-separated string of cell values
-        content = '\n'.join(['\t'.join([str(cell.value) for cell in row]) for row in ws.iter_rows()])
-
-        # Copy the content to the clipboard
-        pyperclip.copy(content)
+        #need to add the specified columns of the work excels as parameters
+        excel_file.pd.DataFrame.to_clipboard(excel=True, index=False, sep="\t", columns=['', ''])
     except Exception as e:
         print(f"Error copying content of '{excel_file}' to clipboard: {e}")
 
@@ -55,12 +49,9 @@ def is_valid_excel_file(file_path):
     except Exception:
         return False
 
-#####################combining home directory and downloads path. unnecessary in single paths that are joined
-# Get the path to the user's home directory
-home_directory = os.path.expanduser('~')
 
-# Construct the path to the Downloads folder
-downloads_folder = os.path.join(home_directory, 'Downloads')
+# Get the path to the user's home download folder 
+downloads_folder = os.path.expanduser('~/Downloads')
 
 # List all files in the Downloads folder
 files = os.listdir(downloads_folder)
