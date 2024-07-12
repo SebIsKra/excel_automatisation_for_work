@@ -16,30 +16,38 @@ def remove_write_protection(excel_file):
     except Exception as e:
         print(f"Error removing write protection from '{excel_file}': {e}")
 
-# Function to append rows 2 and 3 from one Excel file to another
+#Function to append rows 2 and 3 from one Excel file to another
 def append_rows(source_file, target_file):
     try:
-        source_wb = openpyxl.load_workbook(source_file, read_only=True)
-        target_wb = openpyxl.load_workbook(target_file)
-
-        source_ws = source_wb.active
-        target_ws = target_wb.active
+        #Open the excel to append
+        appended_rows_excel = openpyxl.load_workbook(source_file, read_only=True)
+        main_excel = openpyxl.load_workbook(target_file)
+        
+        appended_rows_ws = appended_rows_excel.active
+        main_ws = main_excel.active
 
         # Append rows 2 and 3 from source to target
-        for row in source_ws.iter_rows(min_row=2, max_row=3):
-            target_ws.append([cell.value for cell in row])
+        for row in appended_rows_ws.iter_rows(min_row=2, max_row=3):
+            main_ws.append([cell.value for cell in row])
 
-        target_wb.save(target_file)
+        main_excel.save(target_file)
     except Exception as e:
         print(f"Error appending rows from '{source_file}' to '{target_file}': {e}")
 
 # Function to copy the content of an Excel file to the clipboard
 def copy_to_clipboard(excel_file):
     try:
-        #need to add the specified columns of the work excels as parameters
-        excel_file.pd.DataFrame.to_clipboard(excel=True, index=False, sep="\t", columns=['', ''])
+        #Defines the columns of the facebook import excel
+        necessary_columns=["Campaign ID", "Campaign Name", "Campaign Status", "Campaign Objective", "Buying Type",	"Ad Set ID", "Ad Set Run Status", "Ad Set Name", "Ad Set Time Start", "Ad Set Time Stop", "Ad Set Daily Budget", "Ad Set Lifetime Budget",	"Link Object ID",	"Link",	"Application ID", "Countries", "Global Regions", "Excluded Global Regions",	"Locales",	"Cities",	"Regions",	"Zip",	"Gender",	"Age Min",	"Age Max",	"Education Status",	"Interested In",	"Relationship",	"Connections",	"Excluded Connections",	"Friends of Connections",	"Broad Category Clusters",	"Custom Audiences",	"Excluded Custom Audiences",	"Publisher Platforms",	"Device Platforms",	"Facebook Positions",	"Instagram Positions",	"Messenger Positions",	"Audience Network Positions",	"Optimization Goal",	"Billing Event",	"Bid Amount",	"Ad ID",	"Ad Status",	"Ad Name",	"Title",	"Body",	"Link Description",	"Display Link",	"Conversion Tracking Pixels",	"Creative Type",	"Creative Optimization",	"Image",	"Image Hash",	"Call to Action",	"Story ID"]
+        
+        #Turn the excel into a dataframe for pandas using the specified columns
+        df = pd.read_excel(excel_file, usecols=necessary_columns, dtype=str)
+        #Replaces the dot in the numerical data in "Bid Amount" with comma so the format fits the meta import
+        df["Bid Amount"] = df["Bid Amount"].str.replace('.', ',')
+        #Copies content of the dataframe into the excel file
+        df.to_clipboard(excel=True, index=False, sep="\t")
     except Exception as e:
-        print(f"Error copying content of '{excel_file}' to clipboard: {e}")
+        print(f"Error copying content of \"{excel_file}\" to clipboard: {e}")
 
 # Function to check if a file is a valid Excel file
 def is_valid_excel_file(file_path):
