@@ -58,44 +58,49 @@ def is_valid_excel_file(file_path):
         return False
 
 
-# Get the path to the user's home download folder 
-downloads_folder = os.path.expanduser('~/Downloads')
+def main():
+    # Get the path to the user's home download folder 
+    downloads_folder = os.path.expanduser('~/Downloads')
 
-# List all files in the Downloads folder
-files = os.listdir(downloads_folder)
+    # List all files in the Downloads folder
+    files = os.listdir(downloads_folder)
 
-# Find the first valid Excel file in the Downloads folder
-first_excel_file = None
-processed_files = set()
+    # Find the first valid Excel file in the Downloads folder
+    first_excel_file = None
+    processed_files = set()
 
-for file in files:
-    if file.startswith('picture_facebook'):
-        full_path = os.path.join(downloads_folder, file)
-        if is_valid_excel_file(full_path):
-            if first_excel_file is None:
-                first_excel_file = full_path
-                print("First valid Excel file found:", first_excel_file)
+    
+    for file in files:
+        if file.startswith('picture_facebook'):
+            full_path = os.path.join(downloads_folder, file)
+            if is_valid_excel_file(full_path):
+                if first_excel_file is None:
+                    first_excel_file = full_path
+                    print("First valid Excel file found:", first_excel_file)
 
-                # Remove write protection from the first Excel file and add to processed_files list
-                remove_write_protection(first_excel_file)
-                processed_files.add(full_path)
-            else:
-                # Append rows from other valid Excel files to the first Excel file
-                if full_path not in processed_files:
-                    append_rows(full_path, first_excel_file)
+                    # Remove write protection from the first Excel file and add to processed_files list
+                    remove_write_protection(first_excel_file)
                     processed_files.add(full_path)
+                else:
+                    # Append rows from other valid Excel files to the first Excel file
+                    if full_path not in processed_files:
+                        append_rows(full_path, first_excel_file)
+                        processed_files.add(full_path)
 
-if first_excel_file:
-    print("Rows appended from other Excel files to the first Excel file.")
+    if first_excel_file:
+        print("Rows appended from other Excel files to the first Excel file.")
 
-    # Copy the content of the first Excel file to the clipboard
-    copy_to_clipboard(first_excel_file)
+        # Copy the content of the first Excel file to the clipboard
+        copy_to_clipboard(first_excel_file)
 
-    print("Content of the first Excel file copied to the clipboard.")
-else:
-    print("No valid Excel file found in the Downloads folder.")
+        print("Content of the first Excel file copied to the clipboard.")
+    else:
+        print("No valid Excel file found in the Downloads folder.")
 
-# Print out the processed files
-print("Processed files:")
-for file in processed_files:
-    print(file)
+    # Print out the processed files
+    print("Processed files:")
+    for file in processed_files:
+        print(file)
+
+if __name__ == "__main__":
+    main()
